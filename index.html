@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empeños Soberano — Sistema de Gestión</title>
+    <style>
+        :root {
+            --primary: #0b2545;
+            --secondary: #134074;
+            --gold: #d4a017;
+            --accent: #00a896;
+            --danger: #d90429;
+            --warning: #f77f00;
+            --bg: #eef2f6;
+            --card: #ffffff;
+            --text: #132238;
+        }
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { margin: 0; background: var(--bg); color: var(--text); }
+
+        .container { max-width: 1140px; margin: 0 auto; padding: 16px; }
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white; padding: 14px 20px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+            border-bottom: 3px solid var(--gold);
+        }
+        .brand-header { display: flex; align-items: center; gap: 12px; }
+        .brand-header h1 { margin: 0; font-size: 1.25rem; letter-spacing: 0.3px; }
+        .badge { background: var(--gold); color: #0b2545; padding: 4px 10px; border-radius: 12px; font-size: 0.78rem; font-weight: 800; }
+
+        /* Portada / Registro Principal */
+        .portada-wrap { max-width: 780px; margin: 28px auto; }
+        .hero-card {
+            background: linear-gradient(160deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white; border-radius: 16px 16px 0 0; padding: 28px 24px; text-align: center;
+            border-bottom: 4px solid var(--gold);
+        }
+        .hero-card h2 { margin: 10px 0 6px 0; font-size: 1.6rem; }
+        .hero-card p { margin: 0 auto; max-width: 560px; color: #dbeafe; font-size: 0.95rem; line-height: 1.45; }
+        .registro-card {
+            background: var(--card); border-radius: 0 0 16px 16px; padding: 24px;
+            box-shadow: 0 10px 28px rgba(11, 37, 69, 0.12);
+        }
+        .sub-bar {
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+            margin-top: 14px; padding-top: 14px; border-top: 1px solid #e2e8f0; font-size: 0.88rem;
+        }
+        .link-btn { background: none; border: none; color: var(--secondary); font-weight: 700; cursor: pointer; text-decoration: underline; padding: 0; }
+
+        /* Menú y Pestañas */
+        .menu-bar {
+            background: var(--card); padding: 14px 18px; border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05); margin: 16px 0;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+        }
+        .tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+        .tab-btn { padding: 10px 15px; border: none; background: #e2e8f0; color: var(--text); border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.9rem; }
+        .tab-btn.active { background: var(--primary); color: white; border-bottom: 2px solid var(--gold); }
+
+        .card { background: var(--card); padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; }
+        .form-group { display: flex; flex-direction: column; }
+        label { font-size: 0.84rem; font-weight: 700; margin-bottom: 5px; color: #334155; }
+        input, select, textarea { padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--secondary); }
+
+        .btn { padding: 11px 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.92rem; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-secondary { background: var(--secondary); color: white; }
+        .btn-accent { background: var(--accent); color: white; }
+        .btn-gold { background: var(--gold); color: #0b2545; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-sm { padding: 6px 10px; font-size: 0.8rem; }
+
+        .alert-box { background: #fff3cd; border-left: 5px solid var(--warning); padding: 12px 15px; border-radius: 8px; margin-bottom: 15px; display: none; }
+        .status-activo { color: var(--accent); font-weight: 700; }
+        .status-vencido { color: var(--danger); font-weight: 700; }
+        .status-retirado { color: #64748b; font-weight: 700; }
+
+        .apps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin-top: 12px; }
+        .app-slot { border: 2px solid #e2e8f0; border-radius: 10px; padding: 14px; background: #f8fafc; }
+        .app-slot.selected { border-color: var(--gold); background: #fffbeb; }
+
+        .item-card { border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; margin-bottom: 15px; display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-start; background: #fff; }
+        .item-img { width: 115px; height: 115px; object-fit: cover; border-radius: 8px; border: 1px solid #cbd5e1; background: #f8fafc; }
+        .item-info { flex: 1; min-width: 240px; }
+        .item-info h3 { margin: 0 0 6px 0; color: var(--primary); }
+        .item-info p { margin: 3px 0; font-size: 0.9rem; }
+        .item-actions { display: flex; flex-direction: column; gap: 8px; min-width: 175px; }
+
+        .hidden { display: none !important; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f1f5f9; }
+
+        .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); display: flex; align-items: center; justify-content: center; padding: 15px; z-index: 999; }
+        .modal-content { background: #fff; border-radius: 12px; max-width: 620px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); }
+        .recibo-box { border: 1px dashed #94a3b8; border-radius: 10px; padding: 18px; background: #f8fafc; margin: 12px 0; font-size: 0.92rem; }
+        .recibo-foto { max-width: 150px; max-height: 150px; object-fit: cover; border-radius: 8px; margin-top: 8px; border: 1px solid #cbd5e1; }
+
+        @media print {
+            body * { visibility: hidden; }
+            #recibo-print-area, #recibo-print-area * { visibility: visible; }
+            #recibo-print-area { position: absolute; left: 0; top: 0; width: 100%; border: none; background: #fff; padding: 0; margin: 0; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- LOGO SVG REUTILIZABLE (DEFINICIÓN OCULTA) -->
+<svg width="0" height="0" style="position:absolute;" aria-hidden="true">
+    <defs>
+        <g id="logo-empenos-svg">
+            <circle cx="32" cy="32" r="30" fill="#0b2545" stroke="#d4a017" stroke-width="3"/>
+            <path d="M22 24 C22 17, 42 17, 42 24 C42 29, 35 31, 32 34 L32 40" fill="none" stroke="#facc15" stroke-width="3.5" stroke-linecap="round"/>
+            <circle cx="32" cy="46" r="2.5" fill="#facc15"/>
+            <path d="M15 36 L22 36 M42 36 L49 36" stroke="#00a896" stroke-width="2.5" stroke-linecap="round"/>
+        </g>
+    </defs>
+</svg>
+
+<!-- PANTALLA PRINCIPAL: REGISTRO DEL ADMINISTRADOR PRINCIPAL (CON LOGO) -->
+<div id="onboarding-screen" class="container">
+    <div class="portada-wrap">
+        <div class="hero-card">
+            <svg width="76" height="76" viewBox="0 0 64 64" role="img" aria-label="Logo Sistema de Empeños">
+                <use href="#logo-empenos-svg"></use>
+            </svg>
+            <h2>Registro de Administrador Principal</h2>
+            <p>
+                Configura tu cuenta principal como propietario de la aplicación, guarda tus datos completos y define cuántas aplicaciones o sucursales asociadas deseas habilitar para tus administradores.
+            </p>
+        </div>
+
+        <div class="registro-card">
+            <div class="grid">
+                <div class="form-group">
+                    <label>Nombre Completo del Administrador Principal *</label>
+                    <input type="text" id="reg-nombre" placeholder="Ej: Carlos Andrés Pérez" required>
+                </div>
+                <div class="form-group">
+                    <label>Número de Documento *</label>
+                    <input type="text" id="reg-doc" placeholder="CC / NIT / Identificación" required>
+                </div>
+                <div class="form-group">
+                    <label>Teléfono *</label>
+                    <input type="tel" id="reg-tel" placeholder="Ej: 3001234567" required>
+                </div>
+                <div class="form-group">
+                    <label>Correo Electrónico *</label>
+                    <input type="email" id="reg-email" placeholder="principal@empresa.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Nombre de la Empresa o Negocio *</label>
+                    <input type="text" id="reg-empresa" placeholder="Ej: Empeños y Prendas Central" required>
+                </div>
+                <div class="form-group">
+                    <label>Usuario de Acceso Principal *</label>
+                    <input type="text" id="reg-user" placeholder="Ej: admin_principal" required>
+                </div>
+                <div class="form-group">
+                    <label>Contraseña Principal *</label>
+                    <input type="password" id="reg-pass" placeholder="Crea una contraseña segura" required>
+                </div>
+                <div class="form-group">
+                    <label>¿Cuántas aplicaciones asociadas deseas tener? *</label>
+                    <input type="number" id="reg-cant-apps" min="1" max="50" value="1" required>
+                </div>
+            </div>
+
+            <button class="btn btn-gold" style="width:100%; margin-top:20px; padding:13px; font-size:1rem;" onclick="registrarAdministradorPrincipal()">
+                Registrar Cuenta Principal y Abrir Menú
+            </button>
+
+            <div class="sub-bar">
+                <span>¿Ya registraste tu cuenta principal anteriormente?</span>
+                <button class="link-btn" onclick="irALogin()">Iniciar sesión aquí</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PANTALLA DE INICIO DE SESIÓN (CUANDO YA EXISTE CUENTA PRINCIPAL) -->
+<div id="login-screen" class="container hidden">
+    <div class="portada-wrap" style="max-width:440px;">
+        <div class="hero-card" style="border-radius:16px 16px 0 0; padding:22px;">
+            <svg width="68" height="68" viewBox="0 0 64 64" role="img" aria-label="Logo Sistema de Empeños">
+                <use href="#logo-empenos-svg"></use>
+            </svg>
+            <h2 style="font-size:1.35rem;">Acceso al Sistema</h2>
+            <p style="font-size:0.88rem;">Ingresa con tu cuenta principal o con un administrador asignado.</p>
+        </div>
+        <div class="registro-card">
+            <div class="form-group" style="margin-bottom:12px;">
+                <label>Usuario</label>
+                <input type="text" id="login-user" placeholder="Tu usuario">
+            </div>
+            <div class="form-group" style="margin-bottom:16px;">
+                <label>Contraseña</label>
+                <input type="password" id="login-pass" placeholder="••••••••">
+            </div>
+            <button class="btn btn-primary" style="width:100%;" onclick="iniciarSesion()">Entrar al Menú</button>
+            <div class="sub-bar">
+                <span>¿Configurar un nuevo registro principal?</span>
+                <button class="link-btn" onclick="irAOnboarding()">Ir al registro principal</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- APLICACIÓN PRINCIPAL -->
+<div id="app-screen" class="hidden">
+    <header class="no-print">
+        <div class="brand-header">
+            <svg width="46" height="46" viewBox="0 0 64 64" role="img" aria-label="Logo">
+                <use href="#logo-empenos-svg"></use>
+            </svg>
+            <div>
+                <h1 id="header-app-title">Gestión de Empeños</h1>
+                <span id="current-user-info" style="font-size:0.84rem; opacity:0.92;"></span>
+            </div>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <span id="app-activa-badge" class="badge">App #1</span>
+            <button class="btn btn-danger btn-sm" onclick="cerrarSesion()">Cerrar Sesión</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- MENÚ PRINCIPAL DE NAVEGACIÓN -->
+        <div class="menu-bar no-print">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="cambiarTab('inicio', this)">🏠 Menú Principal</button>
+                <button class="tab-btn" onclick="cambiarTab('nuevo', this)">+ Nuevo Empeño</button>
+                <button class="tab-btn" onclick="cambiarTab('activos', this)">📦 Inventario / Empeños</button>
+                <button class="tab-btn" onclick="cambiarTab('auditoria', this)">📋 Movimientos</button>
+                <button class="tab-btn hidden" id="tab-admins-btn" onclick="cambiarTab('admins', this)">👑 Administradores y Apps</button>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <label for="selector-app-activa" style="margin:0; font-size:0.82rem;">App activa:</label>
+                <select id="selector-app-activa" onchange="cambiarAppActiva(this.value)" style="padding:7px 10px; font-size:0.88rem;"></select>
+            </div>
+        </div>
+
+        <div id="vencimientos-alert" class="alert-box no-print">
+            <strong>⚠️ Atención - Empeños Vencidos:</strong>
+            <div id="vencimientos-list" style="margin-top:5px; font-size:0.9rem;"></div>
+        </div>
+
+        <!-- SECCIÓN 0: MENÚ PRINCIPAL (RESUMEN Y ACCESOS) -->
+        <div id="tab-inicio" class="card no-print">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+                <div>
+                    <h2 style="margin:0 0 4px 0; color:var(--primary);" id="resumen-empresa-titulo">Menú Principal</h2>
+                    <p style="margin:0; color:#475569; font-size:0.9rem;" id="resumen-principal-datos"></p>
+                </div>
+                <button class="btn btn-accent" onclick="irTabDirecto('nuevo')">+ Registrar Nuevo Empeño</button>
+            </div>
+
+            <h3 style="margin-top:20px; margin-bottom:8px; color:var(--primary);">Aplicaciones / Sucursales Asociadas a tu Cuenta</h3>
+            <p style="margin:0 0 12px 0; font-size:0.88rem; color:#475569;">
+                Selecciona con cuál aplicación asociada deseas operar y administrar su equipo.
+            </p>
+            <div id="resumen-apps-grid" class="apps-grid"></div>
+        </div>
+
+        <!-- SECCIÓN 1: NUEVO EMPEÑO -->
+        <div id="tab-nuevo" class="card hidden no-print">
+            <h2 style="margin-top:0;">Registrar Nuevo Artículo</h2>
+            <div class="grid">
+                <div class="form-group">
+                    <label>Nombre del Cliente *</label>
+                    <input type="text" id="cli-nombre" required>
+                </div>
+                <div class="form-group">
+                    <label>Número de Documento *</label>
+                    <input type="text" id="cli-doc" required>
+                </div>
+                <div class="form-group">
+                    <label>Teléfono del Cliente *</label>
+                    <input type="tel" id="cli-tel" required>
+                </div>
+                <div class="form-group">
+                    <label>Correo Electrónico del Cliente</label>
+                    <input type="email" id="cli-email" placeholder="cliente@correo.com">
+                </div>
+                <div class="form-group">
+                    <label>Artículo a Empeñar *</label>
+                    <input type="text" id="art-nombre" placeholder="Ej: Celular, Cadena, Herramienta..." required>
+                </div>
+                <div class="form-group">
+                    <label>Teléfono / Serial / Ref. del Artículo</label>
+                    <input type="text" id="art-tel-ref" placeholder="Ej: IMEI o teléfono de contacto">
+                </div>
+                <div class="form-group">
+                    <label>Valor Prestado ($) *</label>
+                    <input type="number" id="art-valor" min="1" oninput="previsualizarCalculo()" required>
+                </div>
+                <div class="form-group">
+                    <label>Porcentaje de Rédito (%) *</label>
+                    <input type="number" id="art-porcentaje" value="10" min="1" step="0.5" oninput="previsualizarCalculo()" required>
+                </div>
+                <div class="form-group">
+                    <label>Tipo de Interés *</label>
+                    <select id="art-tipo-interes" onchange="previsualizarCalculo()">
+                        <option value="simple">Interés Simple</option>
+                        <option value="compuesto">Interés Compuesto</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Unidad de Tiempo *</label>
+                    <select id="art-unidad" onchange="previsualizarCalculo()">
+                        <option value="horas">Horas</option>
+                        <option value="dias">Días</option>
+                        <option value="semanas">Semanas</option>
+                        <option value="meses" selected>Meses</option>
+                        <option value="anios">Años</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Plazo Pactado (Cantidad) *</label>
+                    <input type="number" id="art-plazo" value="1" min="1" oninput="previsualizarCalculo()" required>
+                </div>
+                <div class="form-group">
+                    <label>Fecha y Hora de Ingreso *</label>
+                    <input type="datetime-local" id="art-fecha-inicio" onchange="previsualizarCalculo()" required>
+                </div>
+                <div class="form-group">
+                    <label>Foto del Artículo (Cámara o Galería)</label>
+                    <input type="file" id="art-foto" accept="image/*" capture="environment">
+                </div>
+            </div>
+
+            <div style="background:#f1f5f9; padding:12px; border-radius:8px; margin-top:15px; font-size:0.92rem;" id="preview-calculo">
+                Ingresa un valor para ver la proyección del interés.
+            </div>
+
+            <button class="btn btn-accent" style="margin-top:15px;" onclick="guardarEmpeno()">Guardar y Generar Recibo</button>
+        </div>
+
+        <!-- SECCIÓN 2: INVENTARIO / EMPEÑOS -->
+        <div id="tab-activos" class="hidden no-print">
+            <div class="card">
+                <div class="grid" style="margin-bottom:15px;">
+                    <input type="text" id="buscador" placeholder="Buscar por cliente, documento, correo o artículo..." oninput="renderizarEmpenos()">
+                    <select id="filtro-estado" onchange="renderizarEmpenos()">
+                        <option value="todos">Todos los estados</option>
+                        <option value="activo">Activos / Vigentes</option>
+                        <option value="vencido">Vencidos</option>
+                        <option value="retirado">Sacados / Retirados</option>
+                    </select>
+                </div>
+                <div id="lista-empenos"></div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3: AUDITORÍA / MOVIMIENTOS -->
+        <div id="tab-auditoria" class="card hidden no-print">
+            <h2 style="margin-top:0;">Registro de Movimientos</h2>
+            <div style="overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha y Hora</th>
+                            <th>App</th>
+                            <th>Administrador</th>
+                            <th>Acción</th>
+                            <th>Detalle</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-auditoria"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 4: ADMINISTRADORES Y APLICACIONES ASOCIADAS (SOLO PRINCIPAL) -->
+        <div id="tab-admins" class="card hidden no-print">
+            <h2 style="margin-top:0;">Administradores y Aplicaciones Asociadas</h2>
+
+            <div class="grid" style="margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #e2e8f0;">
+                <div class="form-group">
+                    <label>Cantidad Total de Aplicaciones Asociadas</label>
+                    <input type="number" id="edit-cant-apps" min="1" max="50">
+                </div>
+                <div class="form-group" style="justify-content:flex-end;">
+                    <button class="btn btn-secondary" onclick="actualizarCantidadApps()">Actualizar Cantidad de Apps</button>
+                </div>
+            </div>
+
+            <h3>Agregar Administrador a una Aplicación Asociada</h3>
+            <div class="grid" style="margin-bottom:15px;">
+                <div class="form-group">
+                    <label>Aplicación Asociada</label>
+                    <select id="new-admin-app"></select>
+                </div>
+                <div class="form-group">
+                    <label>Usuario del Administrador</label>
+                    <input type="text" id="new-admin-user" placeholder="Ej: admin_sucursal1">
+                </div>
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" id="new-admin-email" placeholder="admin@empresa.com">
+                </div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="text" id="new-admin-pass" placeholder="Clave de acceso">
+                </div>
+            </div>
+            <button class="btn btn-primary" style="margin-bottom:18px;" onclick="crearAdmin()">+ Agregar Administrador</button>
+
+            <div style="overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Usuario</th>
+                            <th>Correo</th>
+                            <th>Rol</th>
+                            <th>App Asignada</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-admins"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE RECIBO -->
+<div id="recibo-modal" class="modal-backdrop hidden">
+    <div class="modal-content">
+        <div style="display:flex; justify-content:space-between; align-items:center;" class="no-print">
+            <h2 style="margin:0; color:var(--primary);">Comprobante / Recibo de Empeño</h2>
+            <button class="btn btn-sm btn-danger" onclick="cerrarRecibo()">✕</button>
+        </div>
+        <div id="recibo-print-area" class="recibo-box"></div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;" class="no-print">
+            <button class="btn btn-primary" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+            <button class="btn btn-accent" onclick="enviarReciboCorreo()">✉️ Enviar por Correo</button>
+            <button class="btn btn-secondary" onclick="copiarResumenRecibo()">📋 Copiar Texto</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const DB_KEYS = {
+        PRINCIPAL: 'empenos_principal_v3',
+        APPS: 'empenos_apps_v3',
+        ADMINS: 'empenos_admins_v3',
+        ITEMS: 'empenos_items_v3',
+        LOGS: 'empenos_logs_v3',
+        SESSION: 'empenos_session_v3',
+        ACTIVE_APP: 'empenos_active_app_v3'
+    };
+
+    let reciboActual = null;
+
+    function generarListaApps(cantidad) {
+        const total = Math.max(1, parseInt(cantidad) || 1);
+        const apps = [];
+        for (let i = 1; i <= total; i++) {
+            apps.push({
+                id: 'app_' + i,
+                numero: i,
+                nombre: i === 1 ? 'Aplicación Principal (Sucursal 1)' : `Aplicación Asociada #${i}`
+            });
+        }
+        return apps;
+    }
+
+    function registrarAdministradorPrincipal() {
+        const nombre = document.getElementById('reg-nombre').value.trim();
+        const doc = document.getElementById('reg-doc').value.trim();
+        const tel = document.getElementById('reg-tel').value.trim();
+        const email = document.getElementById('reg-email').value.trim();
+        const empresa = document.getElementById('reg-empresa').value.trim();
+        const user = document.getElementById('reg-user').value.trim();
+        const pass = document.getElementById('reg-pass').value.trim();
+        const cantApps = Math.max(1, parseInt(document.getElementById('reg-cant-apps').value) || 1);
+
+        if (!nombre || !doc || !tel || !email || !empresa || !user || !pass) {
+            return alert('Por favor completa todos los campos del Administrador Principal.');
+        }
+
+        const principalData = { nombre, doc, tel, email, empresa, user, cantApps };
+        const apps = generarListaApps(cantApps);
+        const adminPrincipal = {
+            user,
+            email,
+            pass,
+            role: 'principal',
+            appId: 'todas'
+        };
+
+        localStorage.setItem(DB_KEYS.PRINCIPAL, JSON.stringify(principalData));
+        localStorage.setItem(DB_KEYS.APPS, JSON.stringify(apps));
+        localStorage.setItem(DB_KEYS.ADMINS, JSON.stringify([adminPrincipal]));
+        if (!localStorage.getItem(DB_KEYS.ITEMS)) localStorage.setItem(DB_KEYS.ITEMS, JSON.stringify([]));
+        if (!localStorage.getItem(DB_KEYS.LOGS)) localStorage.setItem(DB_KEYS.LOGS, JSON.stringify([]));
+
+        localStorage.setItem(DB_KEYS.ACTIVE_APP, apps[0].id);
+        localStorage.setItem(DB_KEYS.SESSION, JSON.stringify(adminPrincipal));
+
+        registrarLog('Registro Principal', `Cuenta principal creada para ${empresa} (${nombre} - Doc: ${doc}) con ${cantApps} aplicación(es) asociada(s).`);
+        mostrarApp();
+    }
+
+    function irALogin() {
+        document.getElementById('onboarding-screen').classList.add('hidden');
+        document.getElementById('login-screen').classList.remove('hidden');
+    }
+
+    function irAOnboarding() {
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('onboarding-screen').classList.remove('hidden');
+    }
+
+    function iniciarSesion() {
+        const user = document.getElementById('login-user').value.trim();
+        const pass = document.getElementById('login-pass').value.trim();
+        const admins = JSON.parse(localStorage.getItem(DB_KEYS.ADMINS) || '[]');
+        const found = admins.find(a => a.user === user && a.pass === pass);
+        if (!found) return alert('Usuario o contraseña incorrectos.');
+
+        const apps = JSON.parse(localStorage.getItem(DB_KEYS.APPS) || '[]');
+        const appInicial = (found.appId && found.appId !== 'todas') ? found.appId : (apps[0]?.id || 'app_1');
+        localStorage.setItem(DB_KEYS.ACTIVE_APP, appInicial);
+        localStorage.setItem(DB_KEYS.SESSION, JSON.stringify(found));
+
+        registrarLog('Inicio de Sesión', `Ingresó al sistema con rol ${found.role}.`);
+        mostrarApp();
+    }
+
+    function cerrarSesion() {
+        registrarLog('Cierre de Sesión', 'Cerró sesión en la aplicación.');
+        localStorage.removeItem(DB_KEYS.SESSION);
+        document.getElementById('app-screen').classList.add('hidden');
+        irALogin();
+    }
+
+    function obtenerAppActivaId() {
+        return localStorage.getItem(DB_KEYS.ACTIVE_APP) || 'app_1';
+    }
+
+    function obtenerNombreApp(appId) {
+        const apps = JSON.parse(localStorage.getItem(DB_KEYS.APPS) || '[]');
+        return apps.find(a => a.id === appId)?.nombre || appId;
+    }
+
+    function cambiarAppActiva(nuevoAppId) {
+        const session = JSON.parse(localStorage.getItem(DB_KEYS.SESSION));
+        if (session.role !== 'principal' && session.appId !== nuevoAppId) {
+            alert('Tu cuenta está asignada a una aplicación específica.');
+            renderizarSelectorApps();
+            return;
+        }
+        localStorage.setItem(DB_KEYS.ACTIVE_APP, nuevoAppId);
+        registrarLog('Cambio de Aplicación', `Seleccionó ${obtenerNombreApp(nuevoAppId)}.`);
+        refrescarVistaApp();
+    }
+
+    function renderizarSelectorApps() {
+        const apps = JSON.parse(localStorage.getItem(DB_KEYS.APPS) || '[]');
+        const session = JSON.parse(localStorage.getItem(DB_KEYS.SESSION));
+        const activeId = obtenerAppActivaId();
+        const select = document.getElementById('selector-app-activa');
+
+        const disponibles = session.role === 'principal'
+            ? apps
+            : apps.filter(a => a.id === session.appId);
+
+        select.innerHTML = disponibles.map(a =>
+            `<option value="${a.id}" ${a.id === activeId ? 'selected' : ''}>${a.nombre}</option>`
+        ).join('');
+
+        document.getElementById('app-activa-badge').textContent = obtenerNombreApp(activeId);
+    }
+
+    function mostrarApp() {
+        const session = JSON.parse(localStorage.getItem(DB_KEYS.SESSION));
+        if (!session) return;
+
+        document.getElementById('onboarding-screen').classList.add('hidden');
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('app-screen').classList.remove('hidden');
+
+        const principal = JSON.parse(localStorage.getItem(DB_KEYS.PRINCIPAL) || '{}');
+        document.getElementById('header-app-title').textContent = principal.empresa || 'Gestión de Empeños';
+        document.getElementById('current-user-info').innerHTML =
+            `Usuario: <b>${session.user}</b> <span class="badge">${session.role === 'principal' ? 'ADMINISTRADOR PRINCIPAL' : 'ADMINISTRADOR'}</span>`;
+
+        if (session.role === 'principal') {
+            document.getElementById('tab-admins-btn').classList.remove('hidden');
+        } else {
+            document.getElementById('tab-admins-btn').classList.add('hidden');
+        }
+
+        setFechaActualInput();
+        refrescarVistaApp();
+    }
+
+    function refrescarVistaApp() {
+        renderizarSelectorApps();
+        renderizarResumenPrincipal();
+        verificarVencimientos();
+        renderizarEmpenos();
+        renderizarAuditoria();
+        renderizarAdminsYApps();
+    }
+
+    function renderizarResumenPrincipal() {
+        const principal = JSON.parse(localStorage.getItem(DB_KEYS.PRINCIPAL) || '{}');
+        const apps = JSON.parse(localStorage.getItem(DB_KEYS.APPS) || '[]');
+        const activeId = obtenerAppActivaId();
+
+        document.getElementById('resumen-empresa-titulo').textContent =
+            principal.empresa ? `${principal.empresa} — Menú Principal` : 'Menú Principal';
+        document.getElementById('resumen-principal-datos').textContent = principal.nombre
+            ? `Administrador Principal: ${principal.nombre} | Doc: ${principal.doc} | Tel: ${principal.tel} | Correo: ${principal.email} | Apps asociadas: ${apps.length}`
+            : '';
+
+        document.getElementById('resumen-apps-grid').innerHTML = apps.map(app => {
+            const esActiva = app.id === activeId;
+            return `
+                <div class="app-slot ${esActiva ? 'selected' : ''}">
+                    <div style="font-weight:800; color:var(--primary); margin-bottom:4px;">${app.nombre}</div>
+                    <div style="font-size:0.82rem; color:#475569; margin-bottom:10px;">
+                        ${esActiva ? '● Activa actualmente' : 'Disponible para operar'}
+                    </div>
+                    <button class="btn btn-sm ${esActiva ? 'btn-gold' : 'btn-primary'}" onclick="cambiarAppActiva('${app.id}')">
+                        ${esActiva ? 'En uso' : 'Abrir esta aplicación'}
+                    </button>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function actualizarCantidadApps() {
+        const session = JSON.parse(localStorage.getItem(DB_KEYS.SESSION));
+        if (!session || session.role !== 'principal') return;
+
+        const nuevaCant = Math.max(1, parseInt(document.getElementById('edit-cant-apps').value) || 1);
+        const actuales = JSON.parse(localStorage.getItem(DB_KEYS.APPS) || '[]');
+        const actualizadaLista = generarListaApps(nuevaCant).map((item, idx) =>
+            actuales[idx] ? actuales[idx] : item
+        );
+
+        const principal = JSON.parse(localStorage.getItem(DB_KEYS.PRINCIPAL) || '{}');
+        principal.cantApps = nuevaCant;
+
+        localStorage.setItem(DB_KEYS.PRINCIPAL, JSON.stringify(principal));
+        localStorage.setItem(DB_KEYS.APPS, JSON.stringify(actualizadaLista));
+        if (!actualizadaLista.some(a => a.id === obtenerAppActivaId())) {
+            localStorage.setItem(DB_KEYS.ACTIVE_APP, actualizadaLista[0].id);
+        }
+
+        registrarLog('Actualizó Apps Asociadas', `Configuró ${nuevaCant} aplicación(es) asociada(s).`);
+        refrescarVistaApp();
+        alert('Cantidad de aplicaciones asociadas actualizada.');
+    }
+
+    function crearAdmin() {
+        const session = JSON.parse(localStorage.getItem(DB_KEYS.SESSION));
+        if (!session || session.role !== 'principal') return;
+
+        const appId = document.getElementById('new-admin-app').value;
+        const user = document.getElementById('new-admin-user').value.trim();
+        const email = document.getElementById('new-admin-email').value.trim();
+        const pass = document.getElementById('new-admin-pass').value.trim();
+        if (!user || !pass) return alert('Completa usuario y contraseña del administrador.');
+
+        const admins = JSON.parse(localStorage.getItem(DB_KEYS.ADMINS) || '[]');
+        if (admins.some(a => a.user === user)) return alert('Ese usuario ya existe.');
+
+        admins.push({ user, email, pass, role: 'secundario', appId });
+        localStorage.setItem(DB_KEYS.ADMINS, JSON.stringify(admins));
+
+        document.getElementById('new-admin-user').value = '';
+        document.getElementById('new-admin-email').value = '';
+        document.getElementById('new-admin-pass').value = '';
+
+        registrarLog('Creó Administrador', `Asignó a ${user} (${email || 'sin correo'}) a ${obtenerNombreApp(appId)}.`);
+        renderizarAdminsYApps();
+    }
+
+    function eliminarAdmin(userTarget) {
+        const session = JSON.parse(localStorage.getItem(DB_KEYS.SESSION));
+        if (!session || session.role !== 'principal' || userTarget === session.user) return;
+        if (!confirm(`¿Eliminar al administrador "${userTarget}"?`)) return;
+
+        let admins = JSON.parse(localStorage.getItem(DB_KEYS.ADMINS) || '[]');
+        admins = admins.filter(a => a.user !== userTarget);
+        localStorage.setItem(DB_KEYS.ADMINS, JSON.stringify(admins));
+        registrarLog('Eliminó Administrador', `Eliminó a ${userTarget}.`);
+        renderizarAdminsYApps();
+    }
+
+    function renderizarAdminsYApps() {
+        const principal = JSON.parse(localStorage.getItem(DB_KEYS.PRINCIPAL) || '{}');
+        const apps = JSON.parse(localStorage.getItem(DB_KEYS.APPS) || '[]');
+        const admins = JSON.parse(localStorage.getItem(DB_KEYS.ADMINS) || '[]');
+
+        const editCant = document.getElementById('edit-cant-apps');
+        if (editCant) editCant.value = apps.length || principal.cantApps || 1;
+
+        const selApp = document.getElementById('new-admin-app');
+        if (selApp) {
+            selApp.innerHTML = apps.map(a => `<option value="${a.id}">${a.nombre}</option>`).join('');
+        }
+
+        const tbody = document.getElementById('tabla-admins');
+        if (!tbody) return;
+        tbody.innerHTML = admins.map(a => `
+            <tr>
+                <td><b>${a.user}</b></td>
+                <td>${a.email || '—'}</td>
+                <td>${a.role === 'principal' ? '👑 Administrador Principal' : 'Administrador'}</td>
+                <td>${a.role === 'principal' ? 'Todas las apps asociadas' : obtenerNombreApp(a.appId)}</td>
+                <td>
+                    ${a.role !== 'principal'
+                        ? `<button class="btn btn-danger btn-sm" onclick="eliminarAdmin('${a.user}')">Eliminar</button>`
+                        : '<em>Cuenta Principal</em>'}
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    // CÁLCULOS DE TIEMPO E INTERÉS
+    function setFechaActualInput() {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        document.getElementById('art-fecha-inicio').value = now.toISOString().slice(0, 16);
+    }
+
+    function calcularFechaVencimiento(fechaInicioStr, plazo, unidad) {
+        const fecha = new Date(fechaInicioStr);
+        const p = parseInt(plazo);
+        if (unidad === 'horas') fecha.setHours(fecha.getHours() + p);
+        if (unidad === 'dias') fecha.setDate(fecha.getDate() + p);
+        if (unidad === 'semanas') fecha.setDate(fecha.getDate() + (p * 7));
+        if (unidad === 'meses') fecha.setMonth(fecha.getMonth() + p);
+        if (unidad === 'anios') fecha.setFullYear(fecha.getFullYear() + p);
+        return fecha;
+    }
+
+    function obtenerDuracionCicloMs(fechaInicioStr, plazo, unidad) {
+    const inicio = new Date(fechaInicioStr);
+    const p = Math.max(1, parseInt(plazo) || 1);
+    const msHora = 1000 * 60 * 60;
+    const msDia = msHora * 24;
+
+    if (unidad === 'horas') return p * msHora;
+    if (unidad === 'dias') return p * msDia;
+    if (unidad === 'semanas') return p * 7 * msDia;
+    if (unidad === 'anios') {
+        const fin = new Date(inicio);
+        fin.setFullYear(fin.getFullYear() + p);
+        return Math.max(msDia, fin - inicio);
+    }
+    const finMes = new Date(inicio);
+    finMes.setMonth(finMes.getMonth() + p);
+    return Math.max(msDia * 28, finMes - inicio);
+}
+
+function obtenerPeriodosTranscurridos(fechaInicioStr, fechaCorte, unidad, plazo = 1) {
+    const inicio = new Date(fechaInicioStr);
+    const duracionCicloMs = obtenerDuracionCicloMs(fechaInicioStr, plazo, unidad);
+    const diffMs = Math.max(0, fechaCorte - inicio);
+    if (diffMs === 0) return 1;
+    return Math.max(1, Math.ceil(diffMs / duracionCicloMs));
+}
+
+function calcularMontoTotal(capital, tasaPct, ciclos, tipoInteres) {
+    const r = (parseFloat(tasaPct) || 0) / 100;
+    const n = Math.max(1, parseFloat(ciclos) || 1);
+    const cap = parseFloat(capital) || 0;
+    if (tipoInteres === 'compuesto') {
+        return cap * Math.pow(1 + r, n);
+    }
+    return cap * (1 + r * n);
+}
+
+function obtenerDesgloseFrecuencias(capital, tasaPct, plazo, unidad, tipoInteres, fechaInicioStr) {
+    const duracionCicloMs = obtenerDuracionCicloMs(
+        fechaInicioStr || new Date().toISOString(),
+        plazo,
+        unidad
+    );
+    const interesCiclo = calcularMontoTotal(capital, tasaPct, 1, tipoInteres) - (parseFloat(capital) || 0);
+    const msDia = 1000 * 60 * 60 * 24;
+    const diasPorCiclo = Math.max(1, duracionCicloMs / msDia);
+    const interesPorDia = interesCiclo / diasPorCiclo;
+
+    const frecuencias = [
+        { label: 'Diario (1 día)', dias: 1 },
+        { label: 'Cada 3 días', dias: 3 },
+        { label: 'Quincenal (15 días)', dias: 15 },
+        { label: 'Mensual (30 días)', dias: 30 },
+        { label: 'Bimestral (60 días)', dias: 60 },
+        { label: `Ciclo pactado (${plazo} ${unidad})`, dias: diasPorCiclo }
+    ];
+
+    return frecuencias.map(f => ({
+        label: f.label,
+        monto: interesPorDia * f.dias
+    }));
+}
+
+function previsualizarCalculo() {
+    const valor = parseFloat(document.getElementById('art-valor')?.value) || 0;
+    const pct = parseFloat(document.getElementById('art-porcentaje')?.value) || 0;
+    const tipo = document.getElementById('art-tipo-interes')?.value || 'simple';
+    const unidad = document.getElementById('art-unidad')?.value || 'dias';
+    const plazo = parseInt(document.getElementById('art-plazo')?.value) || 15;
+    const inicio = document.getElementById('art-fecha-inicio')?.value;
+    const box = document.getElementById('preview-calculo');
+    if (!box) return;
+
+    if (valor <= 0 || !inicio) {
+        box.innerHTML = 'Ingresa un valor para ver la proyección del interés por ciclo.';
+        return;
+    }
+
+    const totalCiclo1 = calcularMontoTotal(valor, pct, 1, tipo);
+    const interesCiclo1 = totalCiclo1 - valor;
+    const totalCiclo2 = calcularMontoTotal(valor, pct, 2, tipo);
+    const interesCiclo2 = totalCiclo2 - valor;
+    const vence = calcularFechaVencimiento(inicio, plazo, unidad);
+    const desglose = obtenerDesgloseFrecuencias(valor, pct, plazo, unidad, tipo, inicio);
+
+    const desgloseHTML = desglose
+        .map(d => `<li><b>${d.label}:</b> $${d.monto.toFixed(2)}</li>`)
+        .join('');
+
+    box.innerHTML = `
+        <b>Ciclo pactado (${plazo} ${unidad} al ${pct}% - ${tipo}):</b><br>
+        • <b>1er ciclo cumplido (${vence.toLocaleString()}):</b> Interés <b>$${interesCiclo1.toFixed(2)}</b> → Total: <b>$${totalCiclo1.toFixed(2)}</b><br>
+        • <b>Si se acumulan 2 ciclos:</b> Interés <b>$${interesCiclo2.toFixed(2)}</b> → Total: <b>$${totalCiclo2.toFixed(2)}</b>
+        <div style="margin-top:10px; padding-top:8px; border-top:1px dashed #cbd5e1;">
+            <b>Desglose estimativo de interés según frecuencia:</b>
+            <ul style="margin:6px 0 0 18px; padding:0;">${desgloseHTML}</ul>
+        </div>
+    `;
+}
+    function registrarLog(accion, detalle) {
+        const session = JSON.parse(localStorage.getItem(DB_KEYS.SESSION) || 'null');
+        const appId = obtenerAppActivaId();
+        const logs = JSON.parse(localStorage.getItem(DB_KEYS.LOGS) || '[]');
+        logs.unshift({
+            fecha: new Date().toLocaleString(),
+            app: obtenerNombreApp(appId),
+            admin: session ? session.user : 'Sistema',
+            accion,
+            detalle
+        });
+        localStorage.setItem(DB_KEYS.LOGS, JSON.stringify(logs));
+    }
+
+    function procesarImagen(file) {
+        return new Promise((resolve) => {
+            if (!file) return resolve('');
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 420;
+                    const scale = MAX_WIDTH / img.width;
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scale;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.72));
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    async function guardarEmpeno() {
+        const nombre = document.getElementById('cli-nombre').value.trim();
+        const doc = document.getElementById('cli-doc').value.trim();
+        const tel = document.getElementById('cli-tel').value.trim();
+        const email = document.getElementById('cli-email').value.trim();
+        const articulo = document.getElementById('art-nombre').value.trim();
+        const telRef = document.getElementById('art-tel-ref').value.trim();
+        const valor = parseFloat(document.getElementById('art-valor').value);
+        const porcentaje = parseFloat(document.getElementById('art-porcentaje').value);
+        const tipoInteres = document.getElementById('art-tipo-interes').value;
+        const unidad = document.getElementById('art-unidad').value;
+        const plazo = parseInt(document.getElementById('art-plazo').value);
+        const fechaInicio = document.getElementById('art-fecha-inicio').value;
+        const fotoFile = document.getElementById('art-foto').files[0];
+
+        if (!nombre || !doc || !tel || !articulo || !valor || !fechaInicio) {
+            return alert('Completa todos los campos obligatorios (*).');
+        }
+
+        const fotoBase64 = await procesarImagen(fotoFile);
+        const fechaVencimiento = calcularFechaVencimiento(fechaInicio, plazo, unidad).toISOString();
+        const session = JSON.parse(localStorage.getItem(DB_KEYS.SESSION));
+        const appId = obtenerAppActivaId();
+
+        const nuevoItem = {
+            id: Date.now(),
+            appId,
+            cliente: { nombre, doc, tel, email },
+            articulo,
+            telRef,
+            valor,
+            porcentaje,
+            tipoInteres,
+            unidad,
+            plazo,
+            fechaInicio,
+            fechaVencimiento,
+            foto: fotoBase64,
+            estado: 'activo',
+            creadoPor: session.user,
+            salida: null
+        };
+
+        const items = JSON.parse(localStorage.getItem(DB_KEYS.ITEMS) || '[]');
+        items.unshift(nuevoItem);
+        localStorage.setItem(DB_KEYS.ITEMS, JSON.stringify(items));
+
+        registrarLog('Nuevo Empeño', `Artículo: ${articulo} | Cliente: ${nombre} (${doc}) | Valor: $${valor}`);
+
+        ['cli-nombre', 'cli-doc', 'cli-tel', 'cli-email', 'art-nombre', 'art-tel-ref', 'art-valor', 'art-foto'].forEach(id => {
+            document.getElementById(id).value = '';
+        });
+
+        verificarVencimientos();
+        renderizarEmpenos();
+        renderizarAuditoria();
+        abrirRecibo(nuevoItem.id);
+    }
+
+    function confirmarSalida(id) {
+    const items = JSON.parse(localStorage.getItem(DB_KEYS.ITEMS) || '[]');
+    const idx = items.findIndex(i => i.id === id);
+    if (idx === -1) return;
+
+    const item = items[idx];
+    if (item.estado === 'retirado') {
+        alert('Este artículo ya fue retirado anteriormente.');
+        abrirRecibo(item.id);
+        return;
+    }
+
+    const ahora = new Date();
+    const periodos = Math.max(1, Math.ceil(obtenerPeriodosTranscurridos(item.fechaInicio, ahora, item.unidad)));
+    const totalCobrar = calcularMontoTotal(item.valor, item.porcentaje, periodos, item.tipoInteres);
+
+    const notasSalida = prompt(
+        `Confirmar salida del artículo: "${item.articulo}"\n` +
+        `Recibido originalmente por: ${item.creadoPor}\n` +
+        `Total sugerido (${periodos} ${item.unidad}): $${totalCobrar.toFixed(2)}\n\n` +
+        `Ingresa observaciones de entrega o valor recibido:`,
+        `Retirado por ${item.cliente.nombre}. Total pagado: $${totalCobrar.toFixed(2)}`
+    );
+    if (notasSalida === null) return;
+
+    const session = JSON.parse(localStorage.getItem(DB_KEYS.SESSION));
+    item.estado = 'retirado';
+    item.salida = {
+        fechaHora: ahora.toLocaleString(),
+        admin: session.user, // Quien confirma la salida ahora (aunque no haya recibido el artículo)
+        notas: notasSalida,
+        montoFinal: totalCobrar.toFixed(2)
+    };
+
+    localStorage.setItem(DB_KEYS.ITEMS, JSON.stringify(items));
+    registrarLog(
+        'Salida de Artículo',
+        `Artículo: ${item.articulo} | Cliente: ${item.cliente.nombre} (${item.cliente.doc}) | Recibió: ${item.creadoPor} | Entregó/Confirmó salida: ${session.user} | ${notasSalida}`
+    );
+
+    verificarVencimientos();
+    renderizarEmpenos();
+    renderizarAuditoria();
+    abrirRecibo(item.id);
+}
+
+   function construirTextoRecibo(item) {
+    const ahora = new Date();
+    const periodos = Math.max(1, Math.ceil(obtenerPeriodosTranscurridos(item.fechaInicio, ahora, item.unidad)));
+    const total = item.estado === 'retirado' && item.salida?.montoFinal
+        ? parseFloat(item.salida.montoFinal)
+        : calcularMontoTotal(item.valor, item.porcentaje, periodos, item.tipoInteres);
+    const interes = total - item.valor;
+
+    return [
+        `RECIBO DE EMPEÑO #${item.id} (${obtenerNombreApp(item.appId)})`,
+        `Estado: ${item.estado.toUpperCase()}`,
+        `Cliente: ${item.cliente.nombre} | Doc: ${item.cliente.doc}`,
+        `Tel: ${item.cliente.tel} | Correo: ${item.cliente.email || 'No registrado'}`,
+        `Artículo: ${item.articulo}${item.telRef ? ` | Ref/Tel: ${item.telRef}` : ''}`,
+        `Ingreso: ${new Date(item.fechaInicio).toLocaleString()} (Recibió: ${item.creadoPor})`,
+        `Vencimiento: ${new Date(item.fechaVencimiento).toLocaleString()} (${item.plazo} ${item.unidad})`,
+        `Capital: $${item.valor.toFixed(2)} | Rédito: ${item.porcentaje}% (${item.tipoInteres})`,
+        `Interés: $${interes.toFixed(2)} | Total: $${total.toFixed(2)}`,
+        item.salida
+            ? `Salida: ${item.salida.fechaHora} (Confirmó salida: ${item.salida.admin}) - ${item.salida.notas}`
+            : ''
+    ].filter(Boolean).join('\n');
+}
+
+    function abrirRecibo(id) {
+        const items = JSON.parse(localStorage.getItem(DB_KEYS.ITEMS) || '[]');
+        const item = items.find(i => i.id === id);
+        if (!item) return;
+
+        reciboActual = item;
+        const ahora = new Date();
+        const periodos = Math.max(1, Math.ceil(obtenerPeriodosTranscurridos(item.fechaInicio, ahora, item.unidad)));
+        const total = item.estado === 'retirado' && item.salida?.montoFinal
+            ? parseFloat(item.salida.montoFinal)
+            : calcularMontoTotal(item.valor, item.porcentaje, periodos, item.tipoInteres);
+        const interes = total - item.valor;
+
+        document.getElementById('recibo-print-area').innerHTML = `
+            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #cbd5e1; padding-bottom:8px; margin-bottom:10px;">
+                <div>
+                    <h3 style="margin:0; color:var(--primary);">COMPROBANTE DE EMPEÑO</h3>
+                    <small>#${item.id} • ${obtenerNombreApp(item.appId)} • Admin: <b>${item.creadoPor}</b></small>
+                </div>
+                <b>${item.estado.toUpperCase()}</b>
+            </div>
+            <p><b>Cliente:</b> ${item.cliente.nombre} | <b>Doc:</b> ${item.cliente.doc}</p>
+            <p><b>Teléfono:</b> ${item.cliente.tel} | <b>Correo:</b> ${item.cliente.email || 'No indicado'}</p>
+            <p><b>Artículo:</b> ${item.articulo} ${item.telRef ? `| <b>Ref/Tel:</b> ${item.telRef}` : ''}</p>
+            <p><b>Ingreso:</b> ${new Date(item.fechaInicio).toLocaleString()}</p>
+            <p><b>Vencimiento pactado:</b> ${new Date(item.fechaVencimiento).toLocaleString()} (${item.plazo} ${item.unidad})</p>
+            <p><b>Capital:</b> $${item.valor.toFixed(2)} | <b>Rédito:</b> ${item.porcentaje}% (${item.tipoInteres})</p>
+            <p><b>Interés:</b> $${interes.toFixed(2)} | <b>Total:</b> <b>$${total.toFixed(2)}</b></p>
+            ${item.salida ? `<p style="background:#e2e8f0; padding:8px; border-radius:6px;"><b>Salida:</b> ${item.salida.fechaHora} por <b>${item.salida.admin}</b> — ${item.salida.notas}</p>` : ''}
+            ${item.foto ? `<div><b>Foto del artículo:</b><br><img src="${item.foto}" class="recibo-foto" alt="Artículo"></div>` : ''}
+        `;
+        document.getElementById('recibo-modal').classList.remove('hidden');
+    }
+
+    function cerrarRecibo() {
+        document.getElementById('recibo-modal').classList.add('hidden');
+        reciboActual = null;
+    }
+
+    function enviarReciboCorreo() {
+        if (!reciboActual) return;
+        const destino = reciboActual.cliente.email || '';
+        const asunto = encodeURIComponent(`Recibo de Empeño #${reciboActual.id} - ${reciboActual.articulo}`);
+        const cuerpo = encodeURIComponent(construirTextoRecibo(reciboActual));
+        registrarLog('Envío de Recibo', `Recibo #${reciboActual.id} preparado para ${destino || 'correo manual'}.`);
+        renderizarAuditoria();
+        window.location.href = `mailto:${encodeURIComponent(destino)}?subject=${asunto}&body=${cuerpo}`;
+    }
+
+    function copiarResumenRecibo() {
+        if (!reciboActual) return;
+        navigator.clipboard?.writeText(construirTextoRecibo(reciboActual));
+        alert('Resumen copiado al portapapeles.');
+    }
+
+    function verificarVencimientos() {
+        const items = JSON.parse(localStorage.getItem(DB_KEYS.ITEMS) || '[]');
+        const activeId = obtenerAppActivaId();
+        const ahora = new Date();
+        const vencidos = items.filter(i => i.appId === activeId && i.estado === 'activo' && new Date(i.fechaVencimiento) <= ahora);
+
+        const alertBox = document.getElementById('vencimientos-alert');
+        const listDiv = document.getElementById('vencimientos-list');
+        if (vencidos.length > 0) {
+            alertBox.style.display = 'block';
+            listDiv.innerHTML = vencidos.map(v =>
+                `• <b>${v.articulo}</b> (${v.cliente.nombre} - Tel: ${v.cliente.tel}) venció el ${new Date(v.fechaVencimiento).toLocaleString()}`
+            ).join('<br>');
+        } else {
+            alertBox.style.display = 'none';
+        }
+    }
+
+    function verificarVencimientos() {
+    const items = JSON.parse(localStorage.getItem(DB_KEYS.ITEMS) || '[]');
+    const ahora = new Date();
+
+    // Revisa todos los empeños vencidos de toda la empresa
+    const vencidos = items.filter(i => i.estado === 'activo' && new Date(i.fechaVencimiento) <= ahora);
+
+    const alertBox = document.getElementById('vencimientos-alert');
+    const listDiv = document.getElementById('vencimientos-list');
+    if (!alertBox || !listDiv) return;
+
+    if (vencidos.length > 0) {
+        alertBox.style.display = 'block';
+        listDiv.innerHTML = vencidos.map(v =>
+            `• <b>${v.articulo}</b> (${obtenerNombreApp(v.appId)} — Cliente: ${v.cliente.nombre} - Tel: ${v.cliente.tel}) venció el ${new Date(v.fechaVencimiento).toLocaleString()}`
+        ).join('<br>');
+    } else {
+        alertBox.style.display = 'none';
+    }
+}
+
+function renderizarEmpenos() {
+    const items = JSON.parse(localStorage.getItem(DB_KEYS.ITEMS) || '[]');
+    const query = (document.getElementById('buscador')?.value || '').toLowerCase();
+    const filtro = document.getElementById('filtro-estado')?.value || 'todos';
+    const ahora = new Date();
+    const contenedor = document.getElementById('lista-empenos');
+    if (!contenedor) return;
+
+    // Sin filtro por appId ni por creador: muestra todo el historial de la empresa
+    const filtrados = items.filter(item => {
+        const estaVencido = item.estado === 'activo' && new Date(item.fechaVencimiento) <= ahora;
+        const estadoReal = item.estado === 'retirado' ? 'retirado' : (estaVencido ? 'vencido' : 'activo');
+
+        const coincideTexto =
+            item.cliente.nombre.toLowerCase().includes(query) ||
+            item.cliente.doc.toLowerCase().includes(query) ||
+            (item.cliente.email || '').toLowerCase().includes(query) ||
+            item.articulo.toLowerCase().includes(query) ||
+            (item.creadoPor || '').toLowerCase().includes(query) ||
+            obtenerNombreApp(item.appId).toLowerCase().includes(query);
+
+        return coincideTexto && (filtro === 'todos' || filtro === estadoReal);
+    });
+
+    if (filtrados.length === 0) {
+        contenedor.innerHTML = '<p style="text-align:center; color:#64748b;">No hay empeños registrados en la empresa con ese filtro.</p>';
+        return;
+    }
+
+    contenedor.innerHTML = filtrados.map(item => {
+        const fechaVence = new Date(item.fechaVencimiento);
+        const estaVencido = item.estado === 'activo' && fechaVence <= ahora;
+        const periodos = Math.max(1, Math.ceil(obtenerPeriodosTranscurridos(item.fechaInicio, ahora, item.unidad)));
+        const totalActual = calcularMontoTotal(item.valor, item.porcentaje, periodos, item.tipoInteres);
+        const interesActual = totalActual - item.valor;
+
+        let estadoHTML = '<span class="status-activo">● ACTIVO</span>';
+        if (item.estado === 'retirado') estadoHTML = '<span class="status-retirado">✔ RETIRADO</span>';
+        else if (estaVencido) estadoHTML = '<span class="status-vencido">⚠️ VENCIDO</span>';
+
+        return `
+            <div class="item-card">
+                <img src="${item.foto || 'https://via.placeholder.com/115?text=Sin+Foto'}" class="item-img" alt="Foto artículo">
+                <div class="item-info">
+                    <h3>${item.articulo} — ${estadoHTML}</h3>
+                    <p><b>Origen:</b> ${obtenerNombreApp(item.appId)} | <b>Registrado por:</b> ${item.creadoPor}</p>
+                    <p><b>Cliente:</b> ${item.cliente.nombre} | <b>Doc:</b> ${item.cliente.doc} | <b>Tel:</b> ${item.cliente.tel}</p>
+                    <p><b>Correo:</b> ${item.cliente.email || '—'} ${item.telRef ? `| <b>Ref/Tel:</b> ${item.telRef}` : ''}</p>
+                    <p><b>Ingreso:</b> ${new Date(item.fechaInicio).toLocaleString()}</p>
+                    <p><b>Vencimiento:</b> ${fechaVence.toLocaleString()} (${item.plazo} ${item.unidad})</p>
+                    <p><b>Capital:</b> $${item.valor.toFixed(2)} | <b>Rédito:</b> ${item.porcentaje}% (${item.tipoInteres})</p>
+                    ${item.estado !== 'retirado'
+                        ? `<p style="color:var(--primary); font-size:0.95rem; margin-top:6px;">
+                            <b>Acumulado (${periodos} ${item.unidad}):</b> Interés $${interesActual.toFixed(2)} → <b>Total: $${totalActual.toFixed(2)}</b>
+                           </p>`
+                        : `<div style="background:#f1f5f9; padding:8px; border-radius:6px; margin-top:6px; font-size:0.85rem;">
+                            <b>Salida:</b> ${item.salida.fechaHora} por <b>${item.salida.admin}</b> — ${item.salida.notas}
+                           </div>`
+                    }
+                </div>
+                <div class="item-actions">
+                    <button class="btn btn-secondary btn-sm" onclick="abrirRecibo(${item.id})">🧾 Recibo / PDF / Correo</button>
+                    ${item.estado !== 'retirado'
+                        ? `<button class="btn btn-primary btn-sm" onclick="confirmarSalida(${item.id})">Confirmar Salida</button>`
+                        : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+    function renderizarAuditoria() {
+        const logs = JSON.parse(localStorage.getItem(DB_KEYS.LOGS) || '[]');
+        const tbody = document.getElementById('tabla-auditoria');
+        if (!tbody) return;
+        tbody.innerHTML = logs.map(l => `
+            <tr>
+                <td>${l.fecha}</td>
+                <td>${l.app || '—'}</td>
+                <td><b>${l.admin}</b></td>
+                <td>${l.accion}</td>
+                <td>${l.detalle}</td>
+            </tr>
+        `).join('');
+    }
+
+    function cambiarTab(tabId, btn) {
+        ['inicio', 'nuevo', 'activos', 'auditoria', 'admins'].forEach(id => {
+            document.getElementById('tab-' + id)?.classList.add('hidden');
+        });
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + tabId)?.classList.remove('hidden');
+        if (btn) btn.classList.add('active');
+        refrescarVistaApp();
+    }
+
+    function irTabDirecto(tabId) {
+        const botones = Array.from(document.querySelectorAll('.tab-btn'));
+        const targetBtn = botones.find(b => b.getAttribute('onclick')?.includes(`'${tabId}'`));
+        cambiarTab(tabId, targetBtn || null);
+    }
+
+    // Arranque inicial: si ya existe Administrador Principal y sesión, entra directo; si no existe, muestra el registro principal.
+    (function initArranque() {
+        const principal = localStorage.getItem(DB_KEYS.PRINCIPAL);
+        const session = localStorage.getItem(DB_KEYS.SESSION);
+
+        if (principal && session) {
+            mostrarApp();
+        } else if (principal && !session) {
+            irALogin();
+        } else {
+            irAOnboarding();
+        }
+    })();
+
+    setInterval(verificarVencimientos, 60000);
+
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js').catch(() => {});
+        });
+    }
+</script>
+</body>
+</html>
